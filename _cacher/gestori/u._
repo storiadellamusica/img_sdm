@@ -1,0 +1,4 @@
+<? // Author: Stefano Peloso (http://stefano.io) - Released under CC BY-NC-SA 4.0 (http://creativecommons.org/licenses/by-nc-sa/4.0/)
+$origine=DB::valore("SELECT user_avatar FROM phpbb_users WHERE user_id=$id");
+if(strpos($origine,"http://")!==0)
+	$origine=_ROOT."forum/images/avatars/$origine";

@@ -1,0 +1,11 @@
+<? // Author: Stefano Peloso (http://stefano.io) - Released under CC BY-NC-SA 4.0 (http://creativecommons.org/licenses/by-nc-sa/4.0/)
+ini_set("memory_limit","128M");
+$funzioni=[
+	IMAGETYPE_JPEG=>"imagecreatefromjpeg",
+	IMAGETYPE_GIF=>"imagecreatefromgif",
+	IMAGETYPE_PNG=>"imagecreatefrompng"
+];
+if(!file_exists(_IMG.$tipo))
+	mkdir(_IMG.$tipo);
+if(($x=@getimagesize($origine))&&isset($funzioni[$x[2]]))
+	@imagejpeg(@call_user_func_array($funzioni[$x[2]],[$origine]),_IMG."$tipo/$id.jpg");

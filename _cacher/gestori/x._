@@ -1,0 +1,6 @@
+<? // Author: Stefano Peloso (http://stefano.io) - Released under CC BY-NC-SA 4.0 (http://creativecommons.org/licenses/by-nc-sa/4.0/)
+$origine=DB::valore("SELECT img FROM sdml_artista WHERE ID=$id");
+if(empty($origine))
+	$origine=_ROOT."immagini_r/".DB::valore("SELECT img FROM sdmt_recensioni WHERE Artista=$id AND active=1 ORDER BY Data DESC LIMIT 1").".jpg";
+else
+	$origine=_ROOT."immagini_artisti/$origine";

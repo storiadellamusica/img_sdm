@@ -1,0 +1,20 @@
+<? // Author: Stefano Peloso (http://stefano.io) - Released under CC BY-NC-SA 4.0 (http://creativecommons.org/licenses/by-nc-sa/4.0/)
+ini_set("memory_limit","128M");
+call_user_func(function(){
+	global $tipo,$id,$altezza,$nome;
+	if(!file_exists(_IMG."$tipo/$id.jpg"))return;
+	if(!$altezza||$altezza>1000)return;
+	if(!(list($l,$a)=@getimagesize(_IMG."$tipo/$id.jpg")))return;
+	$larghezza=$l*$altezza/$a;
+	$o=@imagecreatefromjpeg(_IMG."$tipo/$id.jpg");
+	$tmp=@imagecreatetruecolor($larghezza,$altezza);
+	if(!@imagefilledrectangle($tmp,0,0,$larghezza-1,$altezza-1,@imagecolorallocate($tmp,255,255,255)))return;
+	if(!@imagecopyresampled($tmp,$o,0,0,0,0,$larghezza,$altezza,$l,$a))return;
+	@imagedestroy($o);
+	if(!file_exists(_STATIC.$tipo))@mkdir(_STATIC.$tipo);
+	if(!file_exists(_STATIC."$tipo/$altezza"))@mkdir(_STATIC."$tipo/$altezza");
+	if(!@imagejpeg($tmp,_STATIC."/$tipo/$altezza/$nome.jpg"))return;
+	@imagedestroy($tmp);
+	header("Location: /$tipo/$altezza/$nome.jpg");
+	die;
+});

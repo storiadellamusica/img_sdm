@@ -1,0 +1,77 @@
+<? // Author: Stefano Peloso (http://stefano.io) - Released under CC BY-NC-SA 4.0 (http://creativecommons.org/licenses/by-nc-sa/4.0/)
+trait concat{
+	private static $that=null;
+	private static function that(){
+		if(empty(self::$that)){
+			$classe=get_called_class();
+			self::$that=new $classe;
+		}
+		return self::$that;
+	}
+}
+abstract class db_engine{
+	use concat;
+	protected $database,$handler;
+	function __construct(){
+		$c=get_called_class();
+		$this->database=@mysql_connect($c::host,$c::user,$c::password);
+		@mysql_select_db($c::database,$this->database);
+	}
+	static function query(){ //::query("SELECT * FROM tab WHERE field<",$value," AND fiele=","l'apostrofo",...);
+		$that=self::that();
+		$q="";
+		$escape=true;
+		foreach(func_get_args()as $arg)
+			$q.=(($escape=!$escape)?addslashes($arg):$arg)."'";
+		if(func_num_args()%2)$q=substr($q,0,-1);
+		$that->handler=@mysql_query($q,$that->database);
+		return $that;
+	}
+	private static function doquery($args){
+		if(count($args))
+			call_user_func_array(array(get_called_class(),"query"),$args);
+	}
+	static function valore(){
+		self::doquery(func_get_args());
+		return @reset(@mysql_fetch_row(self::that()->handler));
+	}
+	static function riga(){
+		self::doquery(func_get_args());
+		return @mysql_fetch_assoc(self::that()->handler);
+	}
+	static function rigaN(){
+		self::doquery(func_get_args());
+		return @mysql_fetch_row(self::that()->handler);
+	}
+	static function valori(){
+		self::doquery(func_get_args());
+		$that=self::that();
+		while($tmp=@mysql_fetch_row($that->handler))$valori[]=$tmp[0];
+		return $valori;
+	}
+	static function righe(){
+		self::doquery(func_get_args());
+		$that=self::that();
+		while($righe[]=@mysql_fetch_assoc($that->handler));
+		return array_slice($righe,0,-1);
+	}
+	static function righeN(){
+		self::doquery(func_get_args());
+		$that=self::that();
+		while($righe[]=@mysql_fetch_row($that->handler));
+		return array_slice($righe,0,-1);
+	}
+	static function id(){
+		self::doquery(func_get_args());
+		return @mysql_insert_id(self::that()->db);
+	}
+}
+
+
+class DB extends db_engine{
+	const
+		host="localhost",
+		user="storia_sdm_1",
+		password="23-6f-49a",
+		database="storia_sdm_1";
+}
